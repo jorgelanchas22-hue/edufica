@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>EduFísica Pro</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, system-ui, sans-serif; background: #0f172a; color: white; min-height: 100vh; }
+    .header { background: linear-gradient(135deg, #059669, #0891b2); padding: 20px; }
+    .header h1 { font-size: 1.4rem; }
+    .header small { color: #a7f3d0; font-size: 0.75rem; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+    .stat { background: rgba(255,255,255,0.2); border-radius: 12px; padding: 12px; text-align: center; }
+    .stat-num { font-size: 1.5rem; font-weight: bold; }
+    .stat-label { font-size: 0.7rem; color: #d1fae5; }
+    .container { padding: 15px; margin-top: -10px; }
+    .btn { width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; color: white; font-size: 1rem; cursor: pointer; text-align: left; }
+    .btn:active { background: #334155; }
+    .btn-icon { font-size: 1.5rem; }
+    .btn-text { flex: 1; }
+    .btn-text span { display: block; font-weight: 500; }
+    .btn-text small { color: #94a3b8; font-size: 0.75rem; }
+    .btn-primary { background: #059669; border-color: #059669; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
+    .input { width: 100%; padding: 12px; background: #334155; border: 1px solid #475569; border-radius: 8px; color: white; font-size: 1rem; margin-bottom: 10px; }
+    .input:focus { outline: none; border-color: #10b981; }
+    .select { width: 100%; padding: 12px; background: #334155; border: 1px solid #475569; border-radius: 8px; color: white; font-size: 1rem; margin-bottom: 10px; }
+    .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+    .back { color: #94a3b8; font-size: 0.85rem; margin-bottom: 8px; cursor: pointer; display: inline-block; }
+    .list-item { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .delete-btn { color: #f87171; background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 5px 10px; }
+    .prueba-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .prueba-btn { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 15px; text-align: left; cursor: pointer; }
+    .prueba-icon { font-size: 1.8rem; }
+    .prueba-name { font-size: 0.85rem; margin-top: 5px; }
+    .big-input { font-size: 2rem; text-align: center; padding: 20px; }
+    .toast { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); background: #059669; padding: 12px 25px; border-radius: 25px; font-size: 0.9rem; z-index: 100; }
+    .nota { font-size: 1.3rem; font-weight: bold; }
+    .nota.aprobado { color: #34d399; }
+    .nota.suspenso { color: #f87171; }
+    .medal { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; }
+    .gold { background: #f59e0b; }
+    .silver { background: #9ca3af; }
+    .bronze { background: #b45309; }
+    .normal { background: #475569; color: #94a3b8; }
+    .progress { display: flex; gap: 4px; margin-bottom: 15px; }
+    .progress-step { flex: 1; height: 4px; border-radius: 2px; background: #334155; }
+    .progress-step.active { background: #10b981; }
+    .sync { font-size: 0.7rem; color: #34d399; }
+    .loading { text-align: center; padding: 50px; }
+    .loading-spin { animation: spin 1s linear infinite; display: inline-block; font-size: 3rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div id="app"><div class="loading"><div class="loading-spin">🏃</div><p style="margin-top:20px;color:#94a3b8">Conectando...</p></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDHzXEVM22UVMRsgF6ebWXE3VTeO1PWl2s",
+  authDomain: "edufisica-bed47.firebaseapp.com",
+  databaseURL: "https://edufisica-bed47-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "edufisica-bed47",
+  storageBucket: "edufisica-bed47.firebasestorage.app",
+  messagingSenderId: "2918667391",
+  appId: "1:2918667391:web:9ef46bd5a2ec7600fc1b4a"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const CURSOS = ['2º ESO A', '2º ESO B', '2º ESO C', '4º ESO A', '4º ESO B', '4º ESO C'];
+const EVALUACIONES = ['1ª Evaluación', '2ª Evaluación', '3ª Evaluación'];
+const PRUEBAS = [
+  { id: 'velocidad', nombre: 'Velocidad 50m', unidad: 's', icon: '🏃', menor: true },
+  { id: 'salto', nombre: 'Salto Horizontal', unidad: 'cm', icon: '↔️', menor: false },
+  { id: 'flex', nombre: 'Flexibilidad', unidad: 'cm', icon: '🧘', menor: false },
+  { id: 'resist', nombre: 'Course Navette', unidad: 'per', icon: '🫀', menor: false },
+  { id: 'abdominales', nombre: 'Abdominales', unidad: 'rep', icon: '💪', menor: false },
+  { id: 'lanz', nombre: 'Lanzamiento', unidad: 'm', icon: '🏐', menor: false }
+];
+
+const BAREMOS = {
+  velocidad: { M: 7.8, F: 8.8 },
+  salto: { M: 190, F: 160 },
+  flex: { M: 18, F: 27 },
+  resist: { M: 8, F: 5 },
+  abdominales: { M: 26, F: 20 },
+  lanz: { M: 7.5, F: 5 }
+};
+
+let state = {
+  view: 'home',
+  alumnos: [],
+  resultados: [],
+  evaluacion: '1ª Evaluación',
+  regCurso: '',
+  regAlumno: null,
+  regPrueba: null,
+  toast: '',
+  loading: true
+};
+
+function loadData() {
+  db.ref('edufisica/alumnos').on('value', snap => {
+    const data = snap.val();
+    state.alumnos = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : [];
+    state.loading = false;
+    render();
+  });
+  
+  db.ref('edufisica/resultados').on('value', snap => {
+    const data = snap.val();
+    state.resultados = data ? Object.keys(data).map(k => ({ id: k, ...data[k] })) : [];
+    render();
+  });
+}
+
+function showToast(msg) {
+  state.toast = msg;
+  render();
+  setTimeout(() => { state.toast = ''; render(); }, 2000);
+}
+
+function calcNota(pruebaId, valor, sexo) {
+  const ref = BAREMOS[pruebaId]?.[sexo];
+  if (!ref) return null;
+  const pr = PRUEBAS.find(p => p.id === pruebaId);
+  const ratio = pr.menor ? ref / valor : valor / ref;
+  if (ratio >= 1.2) return 10;
+  if (ratio >= 1.1) return 9;
+  if (ratio >= 1.0) return 8;
+  if (ratio >= 0.9) return 7;
+  if (ratio >= 0.8) return 6;
+  if (ratio >= 0.7) return 5;
+  return 4;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  
+  if (state.loading) {
+    app.innerHTML = '<div class="loading"><div class="loading-spin">🏃</div><p style="margin-top:20px;color:#94a3b8">Conectando con Firebase...</p></div>';
+    return;
+  }
+  
+  let html = '';
+  
+  if (state.toast) {
+    html += '<div class="toast">' + state.toast + '</div>';
+  }
+  
+  if (state.view === 'home') {
+    const numReg = state.resultados.filter(r => r.evaluacion === state.evaluacion).length;
+    html = '<div class="header"><div style="display:flex;justify-content:space-between;align-items:center"><div><h1>🏃 EduFísica Pro</h1><small>Salesianos Triana</small></div><span class="sync">☁️ Firebase</span></div><div class="stats"><div class="stat"><div class="stat-num">' + state.alumnos.length + '</div><div class="stat-label">Alumnos</div></div><div class="stat"><div class="stat-num">' + numReg + '</div><div class="stat-label">Registros</div></div><div class="stat"><div class="stat-num">' + [...new Set(state.alumnos.map(a => a.curso))].length + '</div><div class="stat-label">Grupos</div></div></div></div><div class="container"><select class="select" onchange="state.evaluacion=this.value;render()">';
+    EVALUACIONES.forEach(e => { html += '<option' + (e === state.evaluacion ? ' selected' : '') + '>' + e + '</option>'; });
+    html += '</select>';
+    html += '<button class="btn" onclick="state.view=\'alumnos\';render()"><span class="btn-icon">👥</span><div class="btn-text"><span>Alumnos</span><small>Gestionar lista</small></div></button>';
+    html += '<button class="btn" onclick="state.view=\'registrar\';state.regCurso=\'\';render()"><span class="btn-icon">📝</span><div class="btn-text"><span>Registrar Prueba</span><small>Introducir resultados</small></div></button>';
+    html += '<button class="btn" onclick="state.view=\'resultados\';render()"><span class="btn-icon">📊</span><div class="btn-text"><span>Ver Resultados</span><small>Historial por alumno</small></div></button>';
+    html += '<button class="btn" onclick="state.view=\'notas\';render()"><span class="btn-icon">🎓</span><div class="btn-text"><span>Calificaciones</span><small>Notas por curso</small></div></button>';
+    html += '<button class="btn" onclick="state.view=\'ranking\';render()"><span class="btn-icon">🏆</span><div class="btn-text"><span>Rankings</span><small>Mejores por prueba</small></div></button>';
+    html += '<button class="btn" onclick="exportCSV()"><span class="btn-icon">📥</span><div class="btn-text"><span>Exportar CSV</span><small>Descargar datos</small></div></button></div>';
+  }
+  
+  else if (state.view === 'alumnos') {
+    html = '<div class="header"><span class="back" onclick="state.view=\'home\';render()">← Volver</span><h1>👥 Alumnos</h1></div><div class="container"><div class="card"><input type="text" id="nombre" class="input" placeholder="Nombre del alumno"><div class="row"><select id="curso" class="select">';
+    CURSOS.forEach(c => { html += '<option>' + c + '</option>'; });
+    html += '</select><select id="sexo" class="select"><option value="M">♂ Masc</option><option value="F">♀ Fem</option></select><input type="number" id="edad" class="input" value="13" min="10" max="20" style="margin:0"></div><button class="btn btn-primary" onclick="addAlumno()">+ Añadir Alumno</button></div>';
+    state.alumnos.forEach(a => {
+      html += '<div class="list-item"><div><strong>' + a.nombre + '</strong><small style="color:#94a3b8"> · ' + a.curso + ' · ' + (a.sexo === 'M' ? '♂' : '♀') + ' ' + a.edad + '</small></div><button class="delete-btn" onclick="delAlumno(\'' + a.id + '\')">✕</button></div>';
+    });
+    html += '</div>';
+  }
+  
+  else if (state.view === 'registrar') {
+    const step = !state.regCurso ? 1 : !state.regAlumno ? 2 : !state.regPrueba ? 3 : 4;
+    const alumnosCurso = state.alumnos.filter(a => a.curso === state.regCurso);
+    const alumno = state.alumnos.find(a => a.id === state.regAlumno);
+    const prueba = PRUEBAS.find(p => p.id === state.regPrueba);
+    
+    html = '<div class="header"><span class="back" onclick="state.view=\'home\';state.regCurso=\'\';state.regAlumno=null;state.regPrueba=null;render()">← Volver</span><h1>📝 Registrar</h1><small>' + state.evaluacion + '</small></div><div class="container"><div class="progress">';
+    [1,2,3,4].forEach(s => { html += '<div class="progress-step' + (step >= s ? ' active' : '') + '"></div>'; });
+    html += '</div>';
+    
+    if (step === 1) {
+      CURSOS.filter(c => state.alumnos.some(a => a.curso === c)).forEach(c => {
+        html += '<button class="btn" onclick="state.regCurso=\'' + c + '\';render()">' + c + ' <small style="color:#94a3b8">(' + state.alumnos.filter(a => a.curso === c).length + ')</small></button>';
+      });
+    } else if (step === 2) {
+      alumnosCurso.forEach(a => {
+        html += '<button class="btn" onclick="state.regAlumno=\'' + a.id + '\';render()">' + a.nombre + '</button>';
+      });
+    } else if (step === 3) {
+      html += '<p style="margin-bottom:10px;color:#34d399">' + alumno.nombre + '</p><div class="prueba-grid">';
+      PRUEBAS.forEach(p => {
+        html += '<button class="prueba-btn" onclick="state.regPrueba=\'' + p.id + '\';render()"><div class="prueba-icon">' + p.icon + '</div><div class="prueba-name">' + p.nombre + '</div></button>';
+      });
+      html += '</div>';
+    } else if (step === 4) {
+      html += '<div class="card" style="text-align:center"><div style="font-size:3rem">' + prueba.icon + '</div><h2>' + prueba.nombre + '</h2><p style="color:#34d399">' + alumno.nombre + '</p><input type="number" id="valor" class="input big-input" placeholder="0" step="0.1"><button class="btn btn-primary" onclick="guardarYSiguiente()">✓ Guardar → Siguiente</button></div>';
+    }
+    html += '</div>';
+  }
+  
+  else if (state.view === 'resultados') {
+    html = '<div class="header"><span class="back" onclick="state.view=\'home\';render()">← Volver</span><h1>📊 Resultados</h1></div><div class="container"><select id="selAlumno" class="select" onchange="render()"><option value="">Selecciona alumno...</option>';
+    state.alumnos.forEach(a => { html += '<option value="' + a.id + '">' + a.nombre + ' - ' + a.curso + '</option>'; });
+    html += '</select>';
+    const selId = document.getElementById('selAlumno')?.value;
+    if (selId) {
+      const al = state.alumnos.find(a => a.id === selId);
+      state.resultados.filter(r => r.alumnoId === selId).sort((a,b) => new Date(b.fecha) - new Date(a.fecha)).forEach(r => {
+        const pr = PRUEBAS.find(p => p.id === r.pruebaId);
+        const nota = calcNota(r.pruebaId, r.valor, al.sexo);
+        html += '<div class="list-item"><div style="display:flex;gap:10px;align-items:center"><span style="font-size:1.5rem">' + pr.icon + '</span><div><div>' + pr.nombre + '</div><div style="font-weight:bold;color:#3b82f6">' + r.valor + ' ' + pr.unidad + '</div></div></div><div style="text-align:right"><div class="nota ' + (nota >= 5 ? 'aprobado' : 'suspenso') + '">' + nota + '</div><small style="color:#64748b">' + r.evaluacion + '</small></div></div>';
+      });
+    }
+    html += '</div>';
+  }
+  
+  else if (state.view === 'notas') {
+    html = '<div class="header"><span class="back" onclick="state.view=\'home\';render()">← Volver</span><h1>🎓 Calificaciones</h1><small>' + state.evaluacion + '</small></div><div class="container"><select id="selCurso" class="select" onchange="render()">';
+    CURSOS.forEach(c => { html += '<option>' + c + '</option>'; });
+    html += '</select>';
+    const curso = document.getElementById('selCurso')?.value || CURSOS[0];
+    const als = state.alumnos.filter(a => a.curso === curso).map(a => {
+      const res = state.resultados.filter(r => r.alumnoId === a.id && r.evaluacion === state.evaluacion);
+      const notas = res.map(r => calcNota(r.pruebaId, r.valor, a.sexo)).filter(n => n);
+      return { ...a, nota: notas.length ? (notas.reduce((x,y) => x+y, 0) / notas.length).toFixed(1) : 0 };
+    }).filter(a => a.nota > 0).sort((a,b) => b.nota - a.nota);
+    als.forEach((a, i) => {
+      html += '<div class="list-item"><div style="display:flex;gap:10px;align-items:center"><div class="medal ' + (i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'normal') + '">' + (i + 1) + '</div><span>' + a.nombre + '</span></div><span class="nota ' + (a.nota >= 5 ? 'aprobado' : 'suspenso') + '">' + a.nota + '</span></div>';
+    });
+    html += '</div>';
+  }
+  
+  else if (state.view === 'ranking') {
+    html = '<div class="header"><span class="back" onclick="state.view=\'home\';render()">← Volver</span><h1>🏆 Rankings</h1></div><div class="container"><div class="row" style="grid-template-columns:1fr 1fr"><select id="rankCurso" class="select" onchange="render()">';
+    CURSOS.forEach(c => { html += '<option>' + c + '</option>'; });
+    html += '</select><select id="rankPrueba" class="select" onchange="render()">';
+    PRUEBAS.forEach(p => { html += '<option value="' + p.id + '">' + p.icon + ' ' + p.nombre + '</option>'; });
+    html += '</select></div>';
+    const curso = document.getElementById('rankCurso')?.value || CURSOS[0];
+    const pruebaId = document.getElementById('rankPrueba')?.value || PRUEBAS[0].id;
+    const pr = PRUEBAS.find(p => p.id === pruebaId);
+    const ranking = state.alumnos.filter(a => a.curso === curso).map(a => {
+      const res = state.resultados.filter(r => r.alumnoId === a.id && r.pruebaId === pruebaId);
+      const mejor = res.length ? (pr.menor ? Math.min(...res.map(r => r.valor)) : Math.max(...res.map(r => r.valor))) : null;
+      return { ...a, mejor };
+    }).filter(a => a.mejor).sort((a,b) => pr.menor ? a.mejor - b.mejor : b.mejor - a.mejor);
+    ranking.forEach((a, i) => {
+      html += '<div class="list-item"><div style="display:flex;gap:10px;align-items:center"><div class="medal ' + (i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'normal') + '">' + (i + 1) + '</div><span>' + a.nombre + '</span></div><span style="font-weight:bold;color:#3b82f6">' + a.mejor + ' ' + pr.unidad + '</span></div>';
+    });
+    html += '</div>';
+  }
+  
+  app.innerHTML = html;
+}
+
+function addAlumno() {
+  const nombre = document.getElementById('nombre').value.trim();
+  const curso = document.getElementById('curso').value;
+  const sexo = document.getElementById('sexo').value;
+  const edad = parseInt(document.getElementById('edad').value);
+  if (nombre) {
+    db.ref('edufisica/alumnos').push({ nombre, curso, sexo, edad });
+    document.getElementById('nombre').value = '';
+    showToast('✓ Guardado en Firebase');
+  }
+}
+
+function delAlumno(id) {
+  db.ref('edufisica/alumnos/' + id).remove();
+  db.ref('edufisica/resultados').orderByChild('alumnoId').equalTo(id).once('value', snap => {
+    snap.forEach(child => child.ref.remove());
+  });
+  showToast('Eliminado');
+}
+
+function guardarYSiguiente() {
+  const valor = parseFloat(document.getElementById('valor').value);
+  if (!valor) return;
+  
+  db.ref('edufisica/resultados').push({
+    alumnoId: state.regAlumno,
+    pruebaId: state.regPrueba,
+    valor: valor,
+    evaluacion: state.evaluacion,
+    fecha: new Date().toISOString()
+  });
+  showToast('✓ Guardado en Firebase');
+  
+  const alumnosCurso = state.alumnos.filter(a => a.curso === state.regCurso);
+  const idx = alumnosCurso.findIndex(a => a.id === state.regAlumno);
+  if (idx < alumnosCurso.length - 1) {
+    state.regAlumno = alumnosCurso[idx + 1].id;
+  } else {
+    state.regCurso = '';
+    state.regAlumno = null;
+    state.regPrueba = null;
+  }
+  render();
+}
+
+function exportCSV() {
+  let csv = 'Alumno,Curso,Sexo,Evaluacion,Prueba,Resultado,Nota,Fecha\n';
+  state.resultados.forEach(r => {
+    const al = state.alumnos.find(a => a.id === r.alumnoId);
+    const pr = PRUEBAS.find(p => p.id === r.pruebaId);
+    if (al && pr) {
+      csv += '"' + al.nombre + '",' + al.curso + ',' + al.sexo + ',' + r.evaluacion + ',' + pr.nombre + ',' + r.valor + ',' + (calcNota(r.pruebaId, r.valor, al.sexo) || '') + ',' + new Date(r.fecha).toLocaleDateString('es-ES') + '\n';
+    }
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'pruebas_ef.csv';
+  a.click();
+  showToast('📥 CSV descargado');
+}
+
+loadData();
+</script>
+</body>
+</html>
