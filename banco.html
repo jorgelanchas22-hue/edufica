@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduFísica Pro · Banco de actividades</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0f172a;color:#fff}.header{background:linear-gradient(135deg,#059669,#0891b2);padding:20px;position:sticky;top:0;z-index:10}.header h1{margin:0 0 4px;font-size:1.35rem}.header small{color:#d1fae5}.container{max-width:980px;margin:auto;padding:16px}.toolbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:14px}.input,.select{width:100%;padding:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:white}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}.stat{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:12px;text-align:center}.stat strong{display:block;font-size:1.3rem;color:#34d399}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.card{background:#1e293b;border:1px solid #334155;border-radius:14px;padding:14px}.card h3{margin:0 0 8px;font-size:1rem}.meta{font-size:.78rem;color:#94a3b8;margin-bottom:8px}.tag{display:inline-block;padding:4px 8px;margin:2px 4px 2px 0;border-radius:999px;background:#334155;font-size:.72rem}.btn{border:0;border-radius:9px;padding:9px 11px;background:#059669;color:#fff;cursor:pointer}.btn.secondary{background:#334155}.actions{display:flex;gap:7px;margin-top:10px}.empty{padding:40px;text-align:center;color:#94a3b8}.session-panel{position:fixed;right:14px;bottom:14px;background:#0b1220;border:1px solid #334155;border-radius:14px;padding:12px;width:min(360px,calc(100vw - 28px));box-shadow:0 15px 40px rgba(0,0,0,.35)}.session-panel h4{margin:0 0 8px}.session-item{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid #1e293b;font-size:.85rem}.print-btn{width:100%;margin-top:10px}.back{display:inline-block;color:#d1fae5;text-decoration:none;margin-bottom:6px}@media(max-width:700px){.toolbar{grid-template-columns:1fr}.session-panel{position:static;width:auto;margin:16px}.stats{grid-template-columns:1fr 1fr 1fr}}@media print{.header,.toolbar,.stats,.grid,.back{display:none}.session-panel{position:static;border:0;box-shadow:none;width:100%;color:#000;background:#fff}.session-panel .btn{display:none}.session-item{border-color:#ccc;color:#000}}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a class="back" href="index.html">← Volver a EduFísica Pro</a>
+    <h1>📚 Banco de actividades</h1>
+    <small>Busca, filtra y añade ejercicios a una sesión personal</small>
+  </div>
+  <main class="container">
+    <div class="toolbar">
+      <input id="q" class="input" placeholder="Buscar por nombre, material, objetivo..." oninput="render()">
+      <select id="tipo" class="select" onchange="render()"><option value="">Todos los tipos</option><option>Juego cooperativo</option><option>Reto</option><option>Circuito</option><option>Ejercicio técnico</option><option>Tarea motriz</option></select>
+      <select id="curso" class="select" onchange="render()"><option value="">Todos los cursos</option><option>1º ESO</option><option>2º ESO</option><option>3º ESO</option><option>4º ESO</option><option>1º Bach</option><option>2º Bach</option></select>
+    </div>
+    <div class="stats"><div class="stat"><strong id="nTotal">0</strong>Actividades</div><div class="stat"><strong id="nVisibles">0</strong>Resultados</div><div class="stat"><strong id="nSesion">0</strong>En sesión</div></div>
+    <div id="grid" class="grid"></div>
+  </main>
+  <aside class="session-panel">
+    <h4>🧩 Mi sesión</h4>
+    <div id="sessionList"><small style="color:#94a3b8">Añade actividades desde el banco.</small></div>
+    <button class="btn print-btn" onclick="window.print()">🖨️ Imprimir sesión</button>
+  </aside>
+<script>
+const ACTIVIDADES = [
+  {id:'COOP-781',nombre:'El tren de los globos',tipo:'Juego cooperativo',categoria:'Cooperación',cursos:['1º ESO','2º ESO','3º ESO','4º ESO'],duracion:'5-10 min',material:'Un globo por persona',espacio:'Espacio amplio',objetivo:'Coordinación, cooperación y cohesión grupal',fase:'Principal',evaluable:true},
+  {id:'COOP-782',nombre:'Los refugios',tipo:'Juego cooperativo',categoria:'Cooperación',cursos:['1º ESO','2º ESO','3º ESO','4º ESO'],duracion:'15-20 min',material:'Cintas de color y cinta adhesiva',espacio:'Espacio amplio',objetivo:'Cooperación, comunicación no verbal y ayuda entre equipos',fase:'Principal',evaluable:true},
+  {id:'COOP-783',nombre:'La travesía',tipo:'Reto',categoria:'Cooperación',cursos:['2º ESO','3º ESO','4º ESO','1º Bach'],duracion:'25-40 min',material:'Sillas estables',espacio:'Espacio muy amplio',objetivo:'Estrategias de cooperación, equilibrio y comunicación no verbal',fase:'Principal',evaluable:true},
+  {id:'COOP-784',nombre:'Pelota de playa en el aire',tipo:'Juego cooperativo',categoria:'Cooperación',cursos:['1º ESO','2º ESO','3º ESO'],duracion:'10-15 min',material:'Pelota de playa o globo',espacio:'Exterior o gimnasio',objetivo:'Mantener el móvil en el aire mediante cooperación y coordinación',fase:'Activación / Principal',evaluable:false},
+  {id:'COOP-785',nombre:'Te cambio el resorte',tipo:'Reto',categoria:'Cooperación',cursos:['1º ESO','2º ESO','3º ESO','4º ESO'],duracion:'5-10 min',material:'Un resorte por cada 4 personas',espacio:'Espacio amplio',objetivo:'Elaborar estrategias grupales y coordinar movimientos',fase:'Principal',evaluable:true}
+];
+let session = JSON.parse(localStorage.getItem('edufisica_session_builder') || '[]');
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function filtered(){const q=document.getElementById('q').value.toLowerCase().trim();const tipo=document.getElementById('tipo').value;const curso=document.getElementById('curso').value;return ACTIVIDADES.filter(a=>(!tipo||a.tipo===tipo)&&(!curso||a.cursos.includes(curso))&&(!q||[a.nombre,a.material,a.objetivo,a.categoria].join(' ').toLowerCase().includes(q)));}
+function addToSession(id){if(!session.includes(id)){session.push(id);localStorage.setItem('edufisica_session_builder',JSON.stringify(session));render();}}
+function removeFromSession(id){session=session.filter(x=>x!==id);localStorage.setItem('edufisica_session_builder',JSON.stringify(session));render();}
+function renderSession(){const box=document.getElementById('sessionList');const items=session.map(id=>ACTIVIDADES.find(a=>a.id===id)).filter(Boolean);document.getElementById('nSesion').textContent=items.length;if(!items.length){box.innerHTML='<small style="color:#94a3b8">Añade actividades desde el banco.</small>';return;}box.innerHTML=items.map(a=>`<div class="session-item"><span>${esc(a.nombre)} <small style="color:#94a3b8">${esc(a.duracion)}</small></span><button class="btn secondary" onclick="removeFromSession('${a.id}')">✕</button></div>`).join('');}
+function render(){const list=filtered();document.getElementById('nTotal').textContent=ACTIVIDADES.length;document.getElementById('nVisibles').textContent=list.length;const grid=document.getElementById('grid');grid.innerHTML=list.length?list.map(a=>`<article class="card"><h3>${esc(a.nombre)}</h3><div class="meta">${esc(a.tipo)} · ${esc(a.duracion)} · ${esc(a.fase)}</div><span class="tag">${esc(a.categoria)}</span>${a.cursos.map(c=>`<span class="tag">${esc(c)}</span>`).join('')}<p><strong>Objetivo:</strong> ${esc(a.objetivo)}</p><p><strong>Material:</strong> ${esc(a.material)}</p><p><strong>Espacio:</strong> ${esc(a.espacio)}</p>${a.evaluable?'<p style="color:#34d399;font-size:.82rem">✓ Puede generar evidencia evaluable</p>':''}<div class="actions"><button class="btn" onclick="addToSession('${a.id}')">+ Añadir a sesión</button></div></article>`).join(''):'<div class="empty">No hay actividades con esos filtros.</div>';renderSession();}
+render();
+</script>
+</body>
+</html>
