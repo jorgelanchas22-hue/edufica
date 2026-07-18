@@ -1,0 +1,62 @@
+[
+  {
+    "id": "COOP-781",
+    "nombre": "El tren de los globos",
+    "tipo": "Juego cooperativo",
+    "categoria": "Juegos / cooperación",
+    "contenidoPrincipal": "Cooperación",
+    "cursoOriginalEdad": "A partir de 5 años",
+    "duracion": "5-10 minutos",
+    "espacio": "Espacio amplio",
+    "intensidad": "Activo",
+    "fuenteDocumental": "7.81 - 7.100 Juegos de cooperación"
+  },
+  {
+    "id": "COOP-782",
+    "nombre": "Los refugios",
+    "tipo": "Juego cooperativo",
+    "categoria": "Juegos / cooperación",
+    "contenidoPrincipal": "Cooperación",
+    "cursoOriginalEdad": "A partir de 8 años",
+    "duracion": "15-20 minutos",
+    "espacio": "Espacio amplio",
+    "intensidad": "Activo",
+    "fuenteDocumental": "7.81 - 7.100 Juegos de cooperación"
+  },
+  {
+    "id": "COOP-783",
+    "nombre": "La travesía",
+    "tipo": "Juego cooperativo",
+    "categoria": "Juegos / cooperación",
+    "contenidoPrincipal": "Cooperación",
+    "cursoOriginalEdad": "A partir de 10 años",
+    "duracion": "25-40 minutos",
+    "espacio": "Espacio muy amplio",
+    "intensidad": "Muy activo",
+    "fuenteDocumental": "7.81 - 7.100 Juegos de cooperación"
+  },
+  {
+    "id": "COOP-784",
+    "nombre": "Pelota de playa en el aire",
+    "tipo": "Juego cooperativo",
+    "categoria": "Juegos / cooperación",
+    "contenidoPrincipal": "Cooperación",
+    "cursoOriginalEdad": "A partir de 8 años",
+    "duracion": "10-15 minutos",
+    "espacio": "Exterior",
+    "intensidad": "Activo",
+    "fuenteDocumental": "7.81 - 7.100 Juegos de cooperación"
+  },
+  {
+    "id": "COOP-785",
+    "nombre": "Te cambio el resorte",
+    "tipo": "Juego cooperativo",
+    "categoria": "Juegos / cooperación",
+    "contenidoPrincipal": "Cooperación",
+    "cursoOriginalEdad": "A partir de 8 años",
+    "duracion": "5-10 minutos",
+    "espacio": "Espacio amplio",
+    "intensidad": "Activo",
+    "fuenteDocumental": "7.81 - 7.100 Juegos de cooperación"
+  }
+]
