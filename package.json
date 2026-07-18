@@ -1,0 +1,11 @@
+{
+  "name": "edufisica-pro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import:actividades": "node scripts/import-actividades.mjs"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0"
+  }
+}
